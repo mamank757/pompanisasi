@@ -13,6 +13,7 @@
     --text-1:#0f2a1d; --text-2:#3f6152; --text-3:#6b8579;
     --accent:#15803d; --accent-2:#16a34a; --accent-soft:#e6f7ec;
     --water:#0e7490; --water-soft:#e0f5f9;
+    --fuel:#b45309; --fuel-soft:#fef3e2;
     --input-bd:#d7e4dc; --input-bg:#ffffff; --input-focus:#16a34a;
     --danger-bg:#fef2f2; --danger-tx:#b91c1c; --danger-bd:#fecaca;
     --panel-bg:#f7fbf8; --panel-bd:#e4f0e8;
@@ -27,6 +28,7 @@
       --text-1:#eafcef; --text-2:#a9d3bb; --text-3:#7fa28f;
       --accent:#4ade80; --accent-2:#34d399; --accent-soft:#123423;
       --water:#67e8f9; --water-soft:#0b2b33;
+      --fuel:#fb923c; --fuel-soft:#2a1a0a;
       --input-bd:#234533; --input-bg:#0c1d15; --input-focus:#4ade80;
       --danger-bg:#2a1212; --danger-tx:#fca5a5; --danger-bd:#5c1f1f;
       --panel-bg:#0a1a12; --panel-bd:#1c3b2a;
@@ -41,6 +43,7 @@
     --text-1:#eafcef; --text-2:#a9d3bb; --text-3:#7fa28f;
     --accent:#4ade80; --accent-2:#34d399; --accent-soft:#123423;
     --water:#67e8f9; --water-soft:#0b2b33;
+    --fuel:#fb923c; --fuel-soft:#2a1a0a;
     --input-bd:#234533; --input-bg:#0c1d15; --input-focus:#4ade80;
     --danger-bg:#2a1212; --danger-tx:#fca5a5; --danger-bd:#5c1f1f;
     --panel-bg:#0a1a12; --panel-bd:#1c3b2a;
@@ -283,6 +286,34 @@
       </div>
     </section>
 
+    <!-- SECTION C: Bahan Bakar -->
+    <section class="card rounded-2xl p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--fuel-soft); color:var(--fuel);">3</span>
+        <h2 class="font-semibold" style="color:var(--text-1);">Konsumsi Bahan Bakar Solar</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Konsumsi Spesifik (SFC)</label>
+            <div class="relative">
+              <input type="number" id="sfc" value="0.25" step="0.01" min="0.05" class="pr-16">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">L/kWh</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Harga Solar</label>
+            <div class="relative">
+              <input type="number" id="hargaSolar" value="6800" step="50" min="0" class="pr-14">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">Rp/L</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs field-hint -mt-2">Konsumsi bahan bakar spesifik mesin diesel umumnya berkisar 0,19–0,29 L/kWh tenaga yang dihasilkan. Harga default mengikuti harga Solar bersubsidi per September 2026 — sesuaikan bila memakai Dexlite/Pertamina Dex atau harga di wilayah Anda berbeda.</p>
+      </div>
+    </section>
+
     <div id="errorMessage" class="hidden err-box text-sm p-3 rounded-xl mb-4"></div>
 
     <button onclick="hitungWaktu()" class="btn-primary w-full py-3.5 px-4 mb-4 active:scale-[.98] transition-transform">
@@ -315,6 +346,11 @@
         <div class="stat-card rounded-xl p-3">
           <p class="text-xs field-hint mb-0.5">Head total dinamis</p>
           <p id="infoHead" class="text-lg font-semibold" style="color:var(--text-1);">0 m</p>
+        </div>
+        <div class="stat-card rounded-xl p-3 col-span-2">
+          <p class="text-xs field-hint mb-0.5">Perkiraan solar dibutuhkan</p>
+          <p id="infoSolar" class="text-lg font-semibold" style="color:var(--fuel);">0 L</p>
+          <p id="infoBiaya" class="text-xs field-hint mt-0.5">Rp 0</p>
         </div>
       </div>
 
@@ -374,6 +410,12 @@
             <p>Debit aktual dibatasi oleh mana yang lebih kecil — pipa sempit tetap membatasi aliran meski mesin bertenaga besar, begitu pula sebaliknya. Ini alasan mengapa sekadar menaikkan daya mesin tanpa memperbesar pipa sering tidak banyak mempercepat pengisian.</p>
           </div>
 
+          <div>
+            <p class="font-medium mb-1" style="color:var(--text-1);">7. Konsumsi bahan bakar solar</p>
+            <p class="formula panel rounded-lg px-3 py-2 mb-1">Solar (L) = SFC × P (kW) × T (jam)</p>
+            <p>SFC (specific fuel consumption) adalah jumlah solar yang dibakar mesin diesel per satuan energi yang dihasilkan, umumnya 0,19–0,29 L/kWh tergantung kondisi dan pembebanan mesin. Karena kebutuhan solar bergantung pada daya yang benar-benar dipakai, kalkulator menghitung dua skenario: <b>hemat</b> memakai daya aktual yang dibutuhkan untuk mendorong debit efektif (P = ρgQH/η), dan <b>throttle tetap</b> memakai daya penuh mesin — sebab di lapangan banyak pompa diesel sederhana berjalan pada putaran/throttle tetap tanpa mengikuti beban, sehingga solar yang terpakai bisa mendekati kondisi beban penuh walau debit sebenarnya dibatasi pipa.</p>
+          </div>
+
           <div class="pt-2 border-t divider">
             <p class="text-xs field-hint">Catatan: perhitungan ini mengabaikan kehilangan tekanan minor (belokan, katup, sambungan) dan mengasumsikan efisiensi pompa konstan pada semua debit — pada praktiknya efisiensi pompa nyata terukur berkisar 34–65% tergantung titik operasinya. Gunakan hasil ini sebagai estimasi perencanaan awal, beri margin waktu 10–20%, dan sesuaikan dengan pengukuran lapangan bila tersedia.</p>
           </div>
@@ -417,7 +459,7 @@
     }
 
     function hitungWaktu(){
-      const ids = ['luas','perkolasi','eto','hariKering','genangan','sMax','daya','efisiensi','hStatic','panjangPipa'];
+      const ids = ['luas','perkolasi','eto','hariKering','genangan','sMax','daya','efisiensi','hStatic','panjangPipa','sfc','hargaSolar'];
       const val = {};
       for(const id of ids){ val[id] = parseFloat(document.getElementById(id).value); }
       const D_inch = parseFloat(document.getElementById('diameterPipa').value);
@@ -427,7 +469,7 @@
       const debitAktual = parseFloat(document.getElementById('debitAktual').value);
 
       const semuaAngka = Object.values(val).concat([D_inch, C, vDesain]);
-      if(semuaAngka.some(isNaN) || val.luas<=0 || val.daya<=0 || val.efisiensi<=0 || val.panjangPipa<=0 || vDesain<=0){
+      if(semuaAngka.some(isNaN) || val.luas<=0 || val.daya<=0 || val.efisiensi<=0 || val.panjangPipa<=0 || vDesain<=0 || val.sfc<=0 || val.hargaSolar<0){
         showError('Mohon isi semua nilai dengan angka yang valid (lebih dari 0 untuk luas, daya, panjang pipa, efisiensi, dan kecepatan).');
         return;
       }
@@ -479,12 +521,31 @@
       let menit = Math.round((T_hours - jam) * 60);
       if(menit === 60){ menit = 0; jam += 1; }
 
+      // 7) Konsumsi bahan bakar solar
+      const P_rated_kw = P_watt / 1000;
+      let P_actual_kw = (Q_efektif * RHO * G * H_total / eff) / 1000;
+      P_actual_kw = Math.min(P_actual_kw, P_rated_kw); // tidak mungkin melebihi daya terpasang
+      const solarHemat = val.sfc * P_actual_kw * T_hours;
+      const solarPenuh = val.sfc * P_rated_kw * T_hours;
+      const solarMin = Math.min(solarHemat, solarPenuh);
+      const solarMax = Math.max(solarHemat, solarPenuh);
+      const biayaMin = solarMin * val.hargaSolar;
+      const biayaMax = solarMax * val.hargaSolar;
+
       document.getElementById('hasilJam').innerText = jam;
       document.getElementById('hasilMenit').innerText = menit;
       document.getElementById('infoVolume').innerText = fmt(V_total,0) + ' m³';
       document.getElementById('infoDebit').innerText = fmt(Q_efektif*1000,1) + ' L/dt';
       document.getElementById('infoS').innerText = fmt(S_mm,0) + ' mm' + (kenaBatas ? ' (dibatasi)' : '');
       document.getElementById('infoHead').innerText = fmt(H_total,2) + ' m';
+
+      if(Math.abs(solarMax-solarMin) < 0.05){
+        document.getElementById('infoSolar').innerText = fmt(solarMin,1) + ' L';
+        document.getElementById('infoBiaya').innerText = 'Sekitar Rp ' + fmt(biayaMin,0);
+      } else {
+        document.getElementById('infoSolar').innerText = fmt(solarMin,1) + ' – ' + fmt(solarMax,1) + ' L';
+        document.getElementById('infoBiaya').innerText = 'Sekitar Rp ' + fmt(biayaMin,0) + ' – Rp ' + fmt(biayaMax,0) + ' · rentang hemat↔throttle tetap';
+      }
 
       const limiterText = {
         pipa: 'Debit dibatasi oleh kapasitas pipa (' + D_inch + ' inch) — daya mesin masih memiliki cadangan. Memperbesar pipa berpotensi mempercepat pengisian.',
@@ -502,6 +563,10 @@
         <div class="flex justify-between"><span>Kehilangan head akibat gesekan (hf)</span><span class="font-medium">${fmt(hf,2)} m</span></div>
         <div class="flex justify-between"><span>Debit maks. dari daya mesin</span><span class="font-medium">${fmt(Q_mesin*1000,1)} L/dt</span></div>
         <div class="flex justify-between border-t divider pt-1.5 mt-1"><span>Debit efektif dipakai</span><span class="font-medium">${fmt(Q_efektif*1000,1)} L/dt</span></div>
+        <div class="flex justify-between border-t divider pt-1.5 mt-1"><span>Daya aktual terpakai (skenario hemat)</span><span class="font-medium">${fmt(P_actual_kw,2)} kW</span></div>
+        <div class="flex justify-between"><span>Daya penuh mesin (skenario throttle tetap)</span><span class="font-medium">${fmt(P_rated_kw,2)} kW</span></div>
+        <div class="flex justify-between"><span>Solar skenario hemat</span><span class="font-medium">${fmt(solarHemat,1)} L</span></div>
+        <div class="flex justify-between"><span>Solar skenario throttle tetap</span><span class="font-medium">${fmt(solarPenuh,1)} L</span></div>
       `;
 
       document.getElementById('resultSection').classList.remove('hidden');
