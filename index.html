@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Pompanisasi Sawah</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#f0fdf4; --bg-2:#d1fae5;
+    --card-bg:#ffffff; --card-border:#d9f2e3;
+    --text-1:#0f2a1d; --text-2:#3f6152; --text-3:#6b8579;
+    --accent:#15803d; --accent-2:#16a34a; --accent-soft:#e6f7ec;
+    --water:#0e7490; --water-soft:#e0f5f9;
+    --input-bd:#d7e4dc; --input-bg:#ffffff; --input-focus:#16a34a;
+    --danger-bg:#fef2f2; --danger-tx:#b91c1c; --danger-bd:#fecaca;
+    --panel-bg:#f7fbf8; --panel-bd:#e4f0e8;
+    --divider:#e4f0e8;
+    --chip-bg:#eef7f1;
+    --shadow: 0 1px 2px rgba(15,42,29,.04), 0 8px 24px rgba(15,42,29,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg-1:#07160f; --bg-2:#0b2016;
+      --card-bg:#0e2117; --card-border:#1c3b2a;
+      --text-1:#eafcef; --text-2:#a9d3bb; --text-3:#7fa28f;
+      --accent:#4ade80; --accent-2:#34d399; --accent-soft:#123423;
+      --water:#67e8f9; --water-soft:#0b2b33;
+      --input-bd:#234533; --input-bg:#0c1d15; --input-focus:#4ade80;
+      --danger-bg:#2a1212; --danger-tx:#fca5a5; --danger-bd:#5c1f1f;
+      --panel-bg:#0a1a12; --panel-bd:#1c3b2a;
+      --divider:#1c3b2a;
+      --chip-bg:#10281c;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-1:#07160f; --bg-2:#0b2016;
+    --card-bg:#0e2117; --card-border:#1c3b2a;
+    --text-1:#eafcef; --text-2:#a9d3bb; --text-3:#7fa28f;
+    --accent:#4ade80; --accent-2:#34d399; --accent-soft:#123423;
+    --water:#67e8f9; --water-soft:#0b2b33;
+    --input-bd:#234533; --input-bg:#0c1d15; --input-focus:#4ade80;
+    --danger-bg:#2a1212; --danger-tx:#fca5a5; --danger-bd:#5c1f1f;
+    --panel-bg:#0a1a12; --panel-bd:#1c3b2a;
+    --divider:#1c3b2a;
+    --chip-bg:#10281c;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body{
+    font-family:'Inter',sans-serif;
+    background: linear-gradient(160deg, var(--bg-1), var(--bg-2));
+    color: var(--text-1);
+    margin:0;
+    min-height:100vh;
+  }
+  .serif{ font-family:'Source Serif 4', Georgia, serif; }
+  .card{ background:var(--card-bg); border:1px solid var(--card-border); box-shadow:var(--shadow); }
+  .panel{ background:var(--panel-bg); border:1px solid var(--panel-bd); }
+  .field-label{ color:var(--text-1); }
+  .field-hint{ color:var(--text-3); }
+  .divider{ border-color:var(--divider); }
+  input[type=number], select{
+    background:var(--input-bg); border:1px solid var(--input-bd); color:var(--text-1);
+    width:100%; border-radius:0.65rem; padding:0.55rem 0.8rem; font-size:0.95rem;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input[type=number]:focus, select:focus{
+    outline:none; border-color:var(--input-focus); box-shadow:0 0 0 3px rgba(22,163,74,.2);
+  }
+  select{ appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b8579'><path fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/></svg>"); background-repeat:no-repeat; background-position:right .7rem center; background-size:1.1em; padding-right:2rem; }
+  .unit-chip{ color:var(--text-3); font-size:0.8rem; font-weight:500; }
+  .toggle-row{ cursor:pointer; user-select:none; color:var(--accent); }
+  .chip{ background:var(--chip-bg); color:var(--text-2); }
+  .stat-card{ background:var(--panel-bg); border:1px solid var(--panel-bd); }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color:white; font-weight:600; border-radius:0.85rem;
+    box-shadow: 0 8px 20px -6px rgba(21,128,61,.45);
+  }
+  .btn-primary:active{ transform: scale(.98); }
+  .err-box{ background:var(--danger-bg); color:var(--danger-tx); border:1px solid var(--danger-bd); }
+  details > summary{ list-style:none; }
+  details > summary::-webkit-details-marker{ display:none; }
+  .chev{ transition: transform .2s; }
+  details[open] .chev{ transform: rotate(180deg); }
+  .formula{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:0.82rem; }
+  ::selection{ background: color-mix(in srgb, var(--accent) 30%, transparent); }
+</style>
+</head>
+<body class="flex flex-col items-center px-4 py-8">
+
+  <main class="w-full max-w-xl mt-2 mb-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-3" style="background:var(--accent-soft);">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-3 3-3 6 0 9 3-3 3-6 0-9Z"/><path d="M12 11v11"/><path d="M7 16c-2-1-3-3-3-5 3 0 5 1 6 3"/><path d="M17 16c2-1 3-3 3-5-3 0-5 1-6 3"/></svg>
+      </div>
+      <h1 class="text-2xl font-bold serif" style="color:var(--text-1);">Kalkulator Pompanisasi</h1>
+      <p class="text-sm mt-1.5" style="color:var(--text-2);">Estimasi lama mesin pompa menyala berdasarkan luas lahan, kondisi tanah, ukuran pipa, dan daya mesin</p>
+    </div>
+
+    <!-- SECTION A: Lahan & Iklim -->
+    <section class="card rounded-2xl p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--accent-soft); color:var(--accent);">1</span>
+        <h2 class="font-semibold" style="color:var(--text-1);">Lahan &amp; Kondisi Kekeringan</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium field-label mb-1">Luas Lahan</label>
+          <div class="relative">
+            <input type="number" id="luas" value="10000" min="1" class="pr-14">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">m²</span>
+          </div>
+          <p class="text-xs field-hint mt-1">10.000 m² = 1 hektar</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium field-label mb-1">Tekstur Tanah</label>
+          <select id="jenisTanah" onchange="terapkanTekstur()">
+            <option value="2">Liat / liat berat — sulit meresap</option>
+            <option value="4" selected>Lempung — sedang</option>
+            <option value="6.5">Lempung berpasir / berpasir — mudah meresap</option>
+            <option value="custom">Kustom (isi manual)</option>
+          </select>
+          <p class="text-xs field-hint mt-1">Menentukan perkiraan laju perkolasi (rembesan ke bawah)</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Laju Perkolasi (P)</label>
+            <div class="relative">
+              <input type="number" id="perkolasi" value="4" step="0.1" min="0" class="pr-16">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">mm/hr</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Evapotranspirasi (ETo)</label>
+            <div class="relative">
+              <input type="number" id="eto" value="4" step="0.1" min="0" class="pr-16">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">mm/hr</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs field-hint -mt-2">ETo rata-rata iklim tropis Indonesia umumnya 3–5 mm/hari, lebih tinggi saat kemarau panjang</p>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Hari Tanpa Hujan</label>
+            <div class="relative">
+              <input type="number" id="hariKering" value="60" min="0" class="pr-14">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">hari</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Target Genangan</label>
+            <div class="relative">
+              <input type="number" id="genangan" value="0.05" step="0.01" min="0" class="pr-14">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">m</span>
+            </div>
+          </div>
+        </div>
+
+        <details class="pt-1">
+          <summary class="flex items-center gap-1 text-sm font-medium toggle-row">
+            Pengaturan lanjutan
+            <svg class="chev" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+          </summary>
+          <div class="mt-3">
+            <label class="block text-sm font-medium field-label mb-1">Batas Maksimum Kebutuhan Penjenuhan (S maks)</label>
+            <div class="relative">
+              <input type="number" id="sMax" value="250" min="1" class="pr-14">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">mm</span>
+            </div>
+            <p class="text-xs field-hint mt-1">Batas atas lapisan air yang dianggap perlu untuk menjenuhkan tanah kering/retak sebelum digenangi. Praktik umum: 200–300 mm. Mencegah hasil membengkak tak wajar jika hari tanpa hujan sangat panjang.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- SECTION B: Pompa & Pipa -->
+    <section class="card rounded-2xl p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style="background:var(--water-soft); color:var(--water);">2</span>
+        <h2 class="font-semibold" style="color:var(--text-1);">Spesifikasi Mesin &amp; Pipa</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Daya Mesin</label>
+            <div class="relative">
+              <input type="number" id="daya" value="23" min="0.1" step="0.1" class="pr-12">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">PK</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Diameter Pipa</label>
+            <select id="diameterPipa">
+              <option value="2">2 inch</option>
+              <option value="3">3 inch</option>
+              <option value="4">4 inch</option>
+              <option value="5">5 inch</option>
+              <option value="6" selected>6 inch</option>
+              <option value="8">8 inch</option>
+              <option value="10">10 inch</option>
+              <option value="12">12 inch</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Tinggi Angkat Statis</label>
+            <div class="relative">
+              <input type="number" id="hStatic" value="4" step="0.1" min="0" class="pr-14">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">m</span>
+            </div>
+            <p class="text-xs field-hint mt-1">Beda tinggi sumber air ke sawah + hisap</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium field-label mb-1">Panjang Pipa</label>
+            <div class="relative">
+              <input type="number" id="panjangPipa" value="50" min="1" class="pr-14">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">m</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium field-label mb-1">Jenis Pipa</label>
+          <select id="pipaC">
+            <option value="150" selected>PVC (halus)</option>
+            <option value="120">Besi galvanis baru</option>
+            <option value="100">Besi lama / berkarat</option>
+          </select>
+          <p class="text-xs field-hint mt-1">Memengaruhi kehilangan tekanan akibat gesekan di sepanjang pipa</p>
+        </div>
+
+        <details>
+          <summary class="flex items-center gap-1 text-sm font-medium toggle-row">
+            Pengaturan lanjutan
+            <svg class="chev" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+          </summary>
+          <div class="mt-3 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium field-label mb-1">Efisiensi Total Sistem</label>
+                <div class="relative">
+                  <input type="number" id="efisiensi" value="50" min="1" max="95" class="pr-10">
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">%</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium field-label mb-1">Kecepatan Aliran Desain</label>
+                <div class="relative">
+                  <input type="number" id="vMax" value="2.0" step="0.1" min="0.5" max="4" class="pr-14">
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">m/dt</span>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs field-hint -mt-2">Efisiensi gabungan pompa + transmisi (mesin kecil biasanya 40–65%). Kecepatan aliran aman untuk pipa irigasi umumnya 1,5–2,5 m/dt agar gesekan tidak berlebihan.</p>
+          </div>
+        </details>
+
+        <label class="flex items-start gap-2 pt-1 cursor-pointer">
+          <input type="checkbox" id="overrideDebit" onchange="toggleOverride()" class="mt-1 w-4 h-4 rounded" style="accent-color:var(--accent);">
+          <span class="text-sm field-label">Saya sudah punya data debit pompa hasil pengukuran langsung</span>
+        </label>
+        <div id="overrideWrap" class="hidden">
+          <label class="block text-sm font-medium field-label mb-1">Debit Terukur</label>
+          <div class="relative">
+            <input type="number" id="debitAktual" value="30" min="0.1" step="0.1" class="pr-16">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 unit-chip">L/dt</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="errorMessage" class="hidden err-box text-sm p-3 rounded-xl mb-4"></div>
+
+    <button onclick="hitungWaktu()" class="btn-primary w-full py-3.5 px-4 mb-4 active:scale-[.98] transition-transform">
+      Hitung Waktu Pemompaan
+    </button>
+
+    <!-- RESULT -->
+    <section id="resultSection" class="hidden card rounded-2xl p-6 mb-4">
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-center mb-3" style="color:var(--text-3); letter-spacing:.08em;">Estimasi Lama Mesin Menyala</h3>
+      <div class="flex items-end justify-center gap-2 mb-5" style="color:var(--accent);">
+        <span id="hasilJam" class="text-5xl font-extrabold serif">0</span>
+        <span class="text-base font-medium mb-1.5" style="color:var(--text-2);">jam</span>
+        <span id="hasilMenit" class="text-5xl font-extrabold serif ml-1">0</span>
+        <span class="text-base font-medium mb-1.5" style="color:var(--text-2);">menit</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-2">
+        <div class="stat-card rounded-xl p-3">
+          <p class="text-xs field-hint mb-0.5">Volume air dibutuhkan</p>
+          <p id="infoVolume" class="text-lg font-semibold" style="color:var(--text-1);">0 m³</p>
+        </div>
+        <div class="stat-card rounded-xl p-3">
+          <p class="text-xs field-hint mb-0.5">Debit efektif terpakai</p>
+          <p id="infoDebit" class="text-lg font-semibold" style="color:var(--text-1);">0 L/dt</p>
+        </div>
+        <div class="stat-card rounded-xl p-3">
+          <p class="text-xs field-hint mb-0.5">Lapisan penjenuhan (S)</p>
+          <p id="infoS" class="text-lg font-semibold" style="color:var(--text-1);">0 mm</p>
+        </div>
+        <div class="stat-card rounded-xl p-3">
+          <p class="text-xs field-hint mb-0.5">Head total dinamis</p>
+          <p id="infoHead" class="text-lg font-semibold" style="color:var(--text-1);">0 m</p>
+        </div>
+      </div>
+
+      <p id="infoLimiter" class="text-xs text-center chip rounded-lg py-2 px-3 mt-3"></p>
+
+      <details class="mt-4">
+        <summary class="flex items-center justify-center gap-1 text-sm font-medium toggle-row">
+          Lihat rincian teknis
+          <svg class="chev" width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </summary>
+        <div id="rincianBox" class="mt-3 panel rounded-xl p-4 text-sm space-y-1.5" style="color:var(--text-2);"></div>
+      </details>
+    </section>
+
+    <!-- DASAR ILMIAH -->
+    <section class="card rounded-2xl p-5">
+      <details>
+        <summary class="flex items-center justify-between cursor-pointer">
+          <span class="font-semibold" style="color:var(--text-1);">Dasar perhitungan &amp; rumus</span>
+          <svg class="chev" width="16" height="16" viewBox="0 0 20 20" fill="var(--text-2)"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </summary>
+        <div class="mt-4 space-y-4 text-sm" style="color:var(--text-2);">
+
+          <div>
+            <p class="font-medium mb-1" style="color:var(--text-1);">1. Volume air yang harus dipompa</p>
+            <p class="formula panel rounded-lg px-3 py-2 mb-1">V = A × (S + h)</p>
+            <p>A = luas lahan, S = lapisan air untuk menjenuhkan tanah, h = target genangan. Ini prinsip neraca air dasar: volume yang dibutuhkan sama dengan luas dikali kedalaman air yang harus diisi.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-1" style="color:var(--text-1);">2. Kebutuhan penjenuhan tanah (S)</p>
+            <p class="formula panel rounded-lg px-3 py-2 mb-1">Eo = 1,1 × ETo&nbsp;&nbsp;|&nbsp;&nbsp;M = Eo + P&nbsp;&nbsp;|&nbsp;&nbsp;S = min(M × N, S maks)</p>
+            <p>Pendekatan ini mengadaptasi konsep neraca air M = Eo + P (evaporasi air terbuka ditambah perkolasi) yang menjadi dasar metode Van de Goor &amp; Zijlstra — metode standar untuk kebutuhan air pengolahan lahan sawah di Indonesia (dipakai dalam pedoman KP-01). M merepresentasikan laju kehilangan air harian; dikalikan N hari tanpa hujan memberi perkiraan defisit air tanah, dibatasi S maks agar tidak membengkak tak wajar untuk kekeringan yang sangat panjang. Ini bentuk yang disederhanakan untuk estimasi cepat, bukan model penjadwalan debit konstan versi aslinya yang dipakai untuk merancang jaringan irigasi penuh.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-1" style="color:var(--text-1);">3. Debit maksimum dari sisi pipa</p>
+            <p class="formula panel rounded-lg px-3 py-2 mb-1">Q_pipa = (π/4 × D²) × v</p>
+            <p>Dari persamaan kontinuitas fluida. Kecepatan v dibatasi pada kisaran aman (umumnya 1,5–2,5 m/dt) — bukan kecepatan maksimum teoretis pipa, karena kecepatan berlebihan menyebabkan gesekan dan keausan pipa yang besar.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-1" style="color:var(--text-1);">4. Kehilangan tekanan akibat gesekan</p>
+            <p class="formula panel rounded-lg px-3 py-2 mb-1">hf = 10,67 × L × Q^1,852 / (C^1,852 × D^4,87)</p>
+            <p>Persamaan Hazen-Williams, standar rekayasa hidraulika untuk menghitung kehilangan tekanan sepanjang pipa. L = panjang pipa, C = koefisien kekasaran pipa (PVC lebih tinggi/lebih licin dari besi tua). Head total = tinggi angkat statis + hf.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-1" style="color:var(--text-1);">5. Debit maksimum dari sisi daya mesin</p>
+            <p class="formula panel rounded-lg px-3 py-2 mb-1">Q_mesin = (P × η) / (ρ × g × H)</p>
+            <p>Dari persamaan daya hidraulik pompa P = ρgQH/η. P = daya mesin (PK dikonversi ke watt, 1 PK ≈ 735,5 W), η = efisiensi gabungan pompa dan transmisi, ρ = massa jenis air, g = percepatan gravitasi, H = head total dari langkah 4.</p>
+          </div>
+
+          <div>
+            <p class="font-medium mb-1" style="color:var(--text-1);">6. Debit efektif &amp; waktu pemompaan</p>
+            <p class="formula panel rounded-lg px-3 py-2 mb-1">Q efektif = min(Q_pipa, Q_mesin)&nbsp;&nbsp;|&nbsp;&nbsp;T = V / Q efektif</p>
+            <p>Debit aktual dibatasi oleh mana yang lebih kecil — pipa sempit tetap membatasi aliran meski mesin bertenaga besar, begitu pula sebaliknya. Ini alasan mengapa sekadar menaikkan daya mesin tanpa memperbesar pipa sering tidak banyak mempercepat pengisian.</p>
+          </div>
+
+          <div class="pt-2 border-t divider">
+            <p class="text-xs field-hint">Catatan: perhitungan ini mengabaikan kehilangan tekanan minor (belokan, katup, sambungan) dan mengasumsikan efisiensi pompa konstan pada semua debit — pada praktiknya efisiensi pompa nyata terukur berkisar 34–65% tergantung titik operasinya. Gunakan hasil ini sebagai estimasi perencanaan awal, beri margin waktu 10–20%, dan sesuaikan dengan pengukuran lapangan bila tersedia.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+  </main>
+
+  <footer class="mt-6 mb-4 text-center text-xs" style="color:var(--text-3);">
+    <p>Dirancang untuk efisiensi irigasi pertanian &copy; 2026</p>
+  </footer>
+
+  <script>
+    const RHO = 1000;
+    const G = 9.81;
+    const PK_TO_WATT = 735.5;
+    const INCH_TO_M = 0.0254;
+
+    function terapkanTekstur(){
+      const sel = document.getElementById('jenisTanah');
+      if(sel.value !== 'custom'){
+        document.getElementById('perkolasi').value = sel.value;
+      }
+    }
+
+    function toggleOverride(){
+      const on = document.getElementById('overrideDebit').checked;
+      document.getElementById('overrideWrap').classList.toggle('hidden', !on);
+    }
+
+    function fmt(n, d=1){
+      return Number(n).toLocaleString('id-ID', {minimumFractionDigits:d, maximumFractionDigits:d});
+    }
+
+    function showError(msg){
+      const e = document.getElementById('errorMessage');
+      e.textContent = msg;
+      e.classList.remove('hidden');
+      document.getElementById('resultSection').classList.add('hidden');
+    }
+
+    function hitungWaktu(){
+      const ids = ['luas','perkolasi','eto','hariKering','genangan','sMax','daya','efisiensi','hStatic','panjangPipa'];
+      const val = {};
+      for(const id of ids){ val[id] = parseFloat(document.getElementById(id).value); }
+      const D_inch = parseFloat(document.getElementById('diameterPipa').value);
+      const C = parseFloat(document.getElementById('pipaC').value);
+      const vDesain = parseFloat(document.getElementById('vMax').value);
+      const overrideOn = document.getElementById('overrideDebit').checked;
+      const debitAktual = parseFloat(document.getElementById('debitAktual').value);
+
+      const semuaAngka = Object.values(val).concat([D_inch, C, vDesain]);
+      if(semuaAngka.some(isNaN) || val.luas<=0 || val.daya<=0 || val.efisiensi<=0 || val.panjangPipa<=0 || vDesain<=0){
+        showError('Mohon isi semua nilai dengan angka yang valid (lebih dari 0 untuk luas, daya, panjang pipa, efisiensi, dan kecepatan).');
+        return;
+      }
+      if(overrideOn && (isNaN(debitAktual) || debitAktual<=0)){
+        showError('Mohon isi debit terukur dengan angka lebih dari 0.');
+        return;
+      }
+      document.getElementById('errorMessage').classList.add('hidden');
+
+      // 1) Kebutuhan penjenuhan tanah
+      const Eo = 1.1 * val.eto;
+      const M = Eo + val.perkolasi; // mm/hari
+      const S_mm_raw = M * val.hariKering;
+      const S_mm = Math.min(S_mm_raw, val.sMax);
+      const S_m = S_mm / 1000;
+      const kenaBatas = S_mm_raw > val.sMax;
+
+      // 2) Debit dari sisi pipa (kontinuitas)
+      const D = D_inch * INCH_TO_M;
+      const A_pipa = Math.PI/4 * D*D;
+      const Q_pipa = A_pipa * vDesain; // m3/s
+
+      // 3) Head loss (Hazen-Williams) dihitung pada Q_pipa (asumsi konservatif)
+      const hf = 10.67 * val.panjangPipa * Math.pow(Q_pipa,1.852) / (Math.pow(C,1.852) * Math.pow(D,4.8704));
+      const H_total = val.hStatic + hf;
+
+      // 4) Debit dari sisi daya mesin
+      const P_watt = val.daya * PK_TO_WATT;
+      const eff = val.efisiensi/100;
+      const Q_mesin = (P_watt * eff) / (RHO * G * H_total);
+
+      // 5) Debit efektif
+      let Q_efektif, limiter;
+      if(overrideOn){
+        Q_efektif = debitAktual/1000;
+        limiter = 'manual';
+      } else if(Q_pipa <= Q_mesin){
+        Q_efektif = Q_pipa; limiter = 'pipa';
+      } else {
+        Q_efektif = Q_mesin; limiter = 'mesin';
+      }
+
+      // 6) Volume & waktu
+      const V_total = val.luas * (S_m + val.genangan);
+      const Q_m3h = Q_efektif * 3600;
+      const T_hours = V_total / Q_m3h;
+
+      let jam = Math.floor(T_hours);
+      let menit = Math.round((T_hours - jam) * 60);
+      if(menit === 60){ menit = 0; jam += 1; }
+
+      document.getElementById('hasilJam').innerText = jam;
+      document.getElementById('hasilMenit').innerText = menit;
+      document.getElementById('infoVolume').innerText = fmt(V_total,0) + ' m³';
+      document.getElementById('infoDebit').innerText = fmt(Q_efektif*1000,1) + ' L/dt';
+      document.getElementById('infoS').innerText = fmt(S_mm,0) + ' mm' + (kenaBatas ? ' (dibatasi)' : '');
+      document.getElementById('infoHead').innerText = fmt(H_total,2) + ' m';
+
+      const limiterText = {
+        pipa: 'Debit dibatasi oleh kapasitas pipa (' + D_inch + ' inch) — daya mesin masih memiliki cadangan. Memperbesar pipa berpotensi mempercepat pengisian.',
+        mesin: 'Debit dibatasi oleh daya mesin (' + val.daya + ' PK) — pipa masih memiliki kapasitas lebih. Menambah daya mesin berpotensi mempercepat pengisian.',
+        manual: 'Menggunakan debit hasil pengukuran lapangan yang Anda masukkan sendiri.'
+      };
+      document.getElementById('infoLimiter').innerText = limiterText[limiter];
+
+      const rincian = document.getElementById('rincianBox');
+      rincian.innerHTML = `
+        <div class="flex justify-between"><span>Evaporasi air terbuka (Eo = 1,1×ETo)</span><span class="font-medium">${fmt(Eo,2)} mm/hr</span></div>
+        <div class="flex justify-between"><span>Total laju kehilangan air (M = Eo+P)</span><span class="font-medium">${fmt(M,2)} mm/hr</span></div>
+        <div class="flex justify-between"><span>Defisit sebelum dibatasi (M × N hari)</span><span class="font-medium">${fmt(S_mm_raw,0)} mm</span></div>
+        <div class="flex justify-between border-t divider pt-1.5 mt-1"><span>Debit maks. dari pipa (kontinuitas)</span><span class="font-medium">${fmt(Q_pipa*1000,1)} L/dt</span></div>
+        <div class="flex justify-between"><span>Kehilangan head akibat gesekan (hf)</span><span class="font-medium">${fmt(hf,2)} m</span></div>
+        <div class="flex justify-between"><span>Debit maks. dari daya mesin</span><span class="font-medium">${fmt(Q_mesin*1000,1)} L/dt</span></div>
+        <div class="flex justify-between border-t divider pt-1.5 mt-1"><span>Debit efektif dipakai</span><span class="font-medium">${fmt(Q_efektif*1000,1)} L/dt</span></div>
+      `;
+
+      document.getElementById('resultSection').classList.remove('hidden');
+      setTimeout(() => {
+        document.getElementById('resultSection').scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }, 100);
+    }
+  </script>
+</body>
+</html>
